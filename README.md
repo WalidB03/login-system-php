@@ -1,8 +1,8 @@
 # TO-DO
----
 
-### Phase One
+### Phase 01:
+- [x] Directory tree
+- [x] Database setup
 
-- [ ] Directory tree
-- [ ] Database setup
-
+### Phase 02:
+- [ ] POC
