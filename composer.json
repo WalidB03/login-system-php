@@ -1,0 +1,24 @@
+{
+    "name": "walid/login-system-php",
+    "description": "A login system with php",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Walid",
+            "email": "wbaya.p@proton.me"
+        }
+    ],
+    "config": {
+        "vendor-dir": ".vendor"
+    },
+    "autoload": {
+        "files": [
+            "config/envars.php"
+        ]
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

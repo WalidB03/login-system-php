@@ -1,8 +1,4 @@
 # TO-DO
 
-### Phase 01:
-- [x] Directory tree
-- [x] Database setup
-
-### Phase 02:
-- [ ] POC
+- [X] POC
+- [ ] Add more user data to signup form.

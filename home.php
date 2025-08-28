@@ -1,13 +1,3 @@
-<?php
-session_start();
-
-if ( !isset($_SESSION['uid']) ) {
-    header('location: home.php');
-    exit();
-}
-
-?>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -18,9 +8,11 @@ if ( !isset($_SESSION['uid']) ) {
 
     <body>
         <main>
-            <h1>Dashboard!</h1>
+            <h1>Hi!</h1>
 
-            <a href="home.php">Signup</a>
+            <a href="signup.php">Signup</a>
+            <br>
+            <a href="login.php">Login</a>
         </main>
     </body>
 </html>
