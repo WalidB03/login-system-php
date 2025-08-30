@@ -1,4 +1,4 @@
 # TO-DO
 
-- [X] POC
-- [ ] Add more user data to signup form.
+- [X] Add more user data to signup form
+- [ ] Harden the security

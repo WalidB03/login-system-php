@@ -20,7 +20,7 @@ if ( !isset($_SESSION['uid']) ) {
         <main>
             <h1>Dashboard!</h1>
 
-            <a href="home.php">Signup</a>
+            <a href="home.php">Home</a>
         </main>
     </body>
 </html>
