@@ -4,6 +4,8 @@ session_start();
 try{
     require_once('.vendor/autoload.php');
 
+    $_SESSION['csrf_token'] = $_SESSION['csrf_token'] ?? bin2hex(random_bytes(50));
+
     if ( isset($_POST['submit']) ) {
         $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS);
 
@@ -17,6 +19,8 @@ try{
         $account = $stmt->fetch();
 
         if ( $account && password_verify($_POST['password'], $account['password']) ) {
+            session_regenerate_id(true);
+            $_SESSION['last_regeneration'] = time();
             $_SESSION['uid'] = $account['uid'];
             header('location: dashboard.php');
             exit();
@@ -26,8 +30,9 @@ try{
         exit();
     }
 } catch ( Exception $e ) {
-    echo $e->getMessage();
+    error_log($e->getMessage(), 3, PROJECT_ROOT.'exceptions.log');
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -43,6 +48,8 @@ try{
             <h1>Login</h1>
 
             <form action="login.php" method="POST">
+                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
                 <input name="username" type="text" placeholder="username">
                 <br><br>
                 <input name="password" type="password" placeholder="password">

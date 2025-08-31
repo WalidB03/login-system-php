@@ -6,6 +6,11 @@ if ( !isset($_SESSION['uid']) ) {
     exit();
 }
 
+if ( time() - $_SESSION['last_regeneration'] > 300) {
+    session_regenerate_id(true);
+    $_SESSION['last_regeneration'] = time();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -20,7 +25,8 @@ if ( !isset($_SESSION['uid']) ) {
         <main>
             <h1>Dashboard!</h1>
 
-            <a href="home.php">Home</a>
+            <a href="home.php">Home</a><br>
+            <a href="logout.php">Logout</a>
         </main>
     </body>
 </html>

@@ -12,13 +12,13 @@ FLUSH PRIVILEGES;
 USE $DB_NAME;
 
 CREATE TABLE IF NOT EXISTS users(
-    uid         BIGINT PRIMARY KEY AUTO_INCREMENT,
-    username   VARCHAR(255) UNIQUE NOT NULL,
+    uid        BIGINT PRIMARY KEY AUTO_INCREMENT,
+    username   VARCHAR(32) UNIQUE NOT NULL,
     email      VARCHAR(255) UNIQUE NOT NULL,
     password   VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    first_name VARCHAR(255) DEFAULT NULL,
-    last_name  VARCHAR(255) DEFAULT NULL,
+    first_name VARCHAR(32) DEFAULT NULL,
+    last_name  VARCHAR(32) DEFAULT NULL,
     birth_date DATE DEFAULT NULL,
 
     INDEX username_index (username),

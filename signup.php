@@ -1,6 +1,10 @@
 <?php
+session_start();
+
 try {
     require_once('.vendor/autoload.php');
+
+    $_SESSION['csrf_token'] = $_SESSION['csrf_token'] ?? bin2hex(random_bytes(50));
 
     $pdo = new PDO(
         'mysql:host='.DB_HOST.';dbname='.DB_NAME,
@@ -14,43 +18,45 @@ try {
     );
 
 
-    if ( isset($_POST['submit']) && $_POST['password'] === $_POST['confirm_password'] ) {
+    if ( isset($_POST['submit']) ) {
 
-        $regexp = [
-            'options' => ['regexp' => '/^[A-Za-z][A-Za-z0-9_-]{2,31}$/']
-        ];
+        if ( !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '') ) {
+            exit('CSRF Attempt DETECTED!');
+        }
+
+        if ( $_POST['password'] !== $_POST['confirm_password'] ) {
+            exit('Password Confirmation Failed!');
+        }
+
+        $pass_regex = '/^[^\s]{8,}$/';
+        $regexp = ['options' => ['regexp' => '/^[A-Za-z][A-Za-z0-9_-]{2,31}$/']];
 
         // required inputs
         $username = filter_var(trim($_POST['username']), FILTER_VALIDATE_REGEXP, $regexp) ?: NULL;
         $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL) ?: NULL;
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT) ?: NULL;
+        $password = preg_match($pass_regex, $_POST['password']) ? password_hash($_POST['password'], PASSWORD_DEFAULT) : NULL;
 
         // optional inputs
         $first_name = filter_var(trim($_POST['first_name']), FILTER_VALIDATE_REGEXP, $regexp) ?: NULL;
         $last_name = filter_var(trim($_POST['last_name']), FILTER_VALIDATE_REGEXP, $regexp) ?: NULL;
-        $birth_date = DateTime::createFromFormat('Y-m-d', $_POST['birth_date'])?->format('Y-m-d') ?: NULL;
+        $birth_date = (DateTime::createFromFormat('Y-m-d', $_POST['birth_date']) ?: NULL)?->format('Y-m-d');
 
         if ($username && $email && $password) {
             $stmt = $pdo->prepare('
                 INSERT INTO users(username, email, password, first_name, last_name, birth_date)
                     VALUES (:username, :email, :password, :first_name, :last_name, :birth_date);
             ');
-            $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-            $stmt->bindParam(':password', $password, PDO::PARAM_STR);
-            $stmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
-            $stmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
-            $stmt->bindParam(':birth_date', $birth_date, PDO::PARAM_STR);
-            $stmt->execute();
+            $stmt->execute(compact('username', 'email', 'password', 'first_name', 'last_name', 'birth_date'));
         }
 
         header('location: home.php');
+        unset($_SESSION['csrf_token']);
         exit();
 
     }
 
 } catch ( Exception $e ) {
-    echo $e->getMessage();
+    error_log($e->getMessage(), 3, PROJECT_ROOT.'exceptions.log');
 }
 
 ?>
@@ -69,6 +75,8 @@ try {
             <h1>Signup</h1>
 
             <form action="signup.php" method="POST">
+                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
                 <input name="first_name" type="text" placeholder="First Name (Optional)"><br><br>
                 <input name="last_name" type="text" placeholder="Last Name (Optional)"><br><br>
                 <input name="birth_date" type="date"><br><br>
